@@ -2641,12 +2641,12 @@ function selectTodaysProducts(){
   // 1. Due reviews (mastered products with nextReview <= today)
   // Exclude discontinued items
   const due = PRODUCTS
-    .filter(p => USER.products[p.i] && USER.products[p.i].status === 'mastered' && USER.products[p.i].nextReview <= today && p.in_current_menu !== false)
+    .filter(p => USER.products[p.i] && USER.products[p.i].status === 'mastered' && USER.products[p.i].nextReview <= today)
     .slice(0, 2);
   
   // 2. In-progress (learning status) — also exclude discontinued
   const inProgress = PRODUCTS
-    .filter(p => USER.products[p.i] && USER.products[p.i].status === 'learning' && p.in_current_menu !== false)
+    .filter(p => USER.products[p.i] && USER.products[p.i].status === 'learning')
     .slice(0, 2);
   
   // 3. New products to introduce - prioritize:
@@ -2658,7 +2658,6 @@ function selectTodaysProducts(){
   let candidates = PRODUCTS.filter(p => 
     !seenIds.has(p.i) && 
     p.hasRealIngredients && 
-    p.in_current_menu !== false &&  // exclude discontinued
     p.kind === 'main'  // exclude kitchen items, (P), (P O) variants
   );
   
@@ -3469,7 +3468,7 @@ function makeDescribeQuiz(product){
   const otherProducts = PRODUCTS.filter(p =>
     p.i !== product.i &&
     p.cat === product.cat &&
-    p.in_current_menu !== false &&
+    
     p[langField]  // MUST have description in current language
   );
   
@@ -3492,7 +3491,7 @@ function makeDescribeQuiz(product){
     // Try same-language distractors from any category
     const broaderPool = PRODUCTS.filter(p =>
       p.i !== product.i &&
-      p.in_current_menu !== false &&
+      
       p[langField]
     ).map(p => firstSentence(p[langField]))
      .filter(s => s && s.length >= 15 && s.length <= 180 && s !== correct);
@@ -3596,8 +3595,7 @@ function makeMultiIngredientQuiz(product){
     p.i !== product.i && 
     p.cat === product.cat && 
     p.realIngs && 
-    p.realIngs.length > 0 &&
-    p.in_current_menu !== false
+    p.realIngs.length > 0
   );
   
   const distractorPool = new Set();
@@ -4181,7 +4179,6 @@ function renderExploreList(){
   // Filter: real ingredients + currently in menu + only main products (no kitchen, no variants)
   let list = PRODUCTS.filter(p => 
     p.hasRealIngredients && 
-    p.in_current_menu !== false &&
     p.kind === 'main'
   );
   if (role === 'service') list = list.filter(p => p.t === 1);
